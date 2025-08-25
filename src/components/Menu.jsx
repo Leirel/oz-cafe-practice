@@ -1,14 +1,46 @@
+import { useState } from "react";
 import { useMenu } from "../context/MenuContext";
+import Item from "./Item";
+import OrderModal from "./OrderModal";
 
 function Menu() {
   const { menu } = useMenu();
+  const [modalOn, setModalOn] = useState(false);
+  const [modalMenu, setModalMenu] = useState(null);
+
+  if (!menu) {
+    return (
+      <div style={{ textAlign: "center", margin: "80px" }}>
+        메뉴 정보가 없어요!
+      </div>
+    );
+  }
+
+  const categories = Object.keys(menu);
 
   return (
-    <div>
-      {menu.map(item => (
-        <div key={item.id}>{item.name}</div>
+    <>
+      {categories.map((category) => (
+        <section key={category}>
+          <h2>{category}</h2>
+          <ul className="menu">
+            {menu[category].map((item) => (
+              <Item
+                key={item.id}
+                item={item}
+                clickHandler={() => {
+                  setModalMenu(item);
+                  setModalOn(true);
+                }}
+              />
+            ))}
+          </ul>
+        </section>
       ))}
-    </div>
+      {modalOn && (
+        <OrderModal selectedItem={modalMenu} setModalOn={setModalOn} />
+      )}
+    </>
   );
 }
 
